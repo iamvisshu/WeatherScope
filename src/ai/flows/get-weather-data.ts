@@ -39,15 +39,18 @@ const getWeatherDataFlow = ai.defineFlow(
     outputSchema: WeatherDataSchema,
   },
   async (input) => {
-    const llmResponse = await getWeatherPrompt(input);
-
-    const weatherToolResponse = llmResponse.toolRequest?.output;
-    if (weatherToolResponse) {
-      return weatherToolResponse as GetWeatherDataOutput;
+    try {
+      const llmResponse = await getWeatherPrompt(input);
+  
+      const weatherToolResponse = llmResponse.toolRequest?.output;
+      if (weatherToolResponse) {
+        return weatherToolResponse as GetWeatherDataOutput;
+      }
+    } catch (error) {
+      console.error("LLM call failed, likely due to rate limiting. Using fallback.", error);
     }
 
-    // Fallback or error handling if the tool doesn't respond as expected
-    // This could be a call to another service, or a default response
+    // Fallback or error handling if the tool doesn't respond as expected or if the LLM call fails
     const fallback = await getCurrentWeather(input);
     return fallback;
   }
