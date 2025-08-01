@@ -17,7 +17,7 @@ export async function getAdaptiveTheme(weatherData: WeatherData): Promise<AdaptC
     });
     return theme;
   } catch (error) {
-    console.error('Error getting adaptive theme:', error);
+    console.error('Error getting adaptive theme, using fallback:', error);
     // Return a default theme in case of an error
     return {
       primaryColor: '#87CEEB',
