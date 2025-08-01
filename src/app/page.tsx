@@ -5,16 +5,15 @@ import type { CSSProperties } from 'react';
 import { LocationSelector } from "@/components/location-selector";
 import { WeatherDisplay } from "@/components/weather-display";
 import type { WeatherData } from "@/lib/weather-data";
-import { getAdaptiveTheme, getRealtimeWeather } from "@/app/actions";
+import { getAdaptiveTheme, getRealtimeWeather, type ColorTheme } from "@/app/actions";
 import { hexToHsl } from "@/lib/utils";
-import type { AdaptColorThemeOutput } from "@/ai/flows/adapt-color-theme";
 import { LoadingAnimation } from "@/components/loading-animation";
 import { Sun, Heart } from "lucide-react";
 
 export default function Home() {
   const [city, setCity] = useState<string | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [colorTheme, setColorTheme] = useState<AdaptColorThemeOutput | null>(
+  const [colorTheme, setColorTheme] = useState<ColorTheme | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +93,7 @@ export default function Home() {
         </div>
       </div>
        <footer className="text-center text-sm text-muted-foreground mt-8">
-        © 2025 Created With <Heart className="inline-block h-4 w-4 text-destructive fill-destructive" /> By <a href="https://github.com/iamvisshu" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@iamvisshu</a>
+        © 2025 Created With <Heart className="inline-block h-4 w-4 text-destructive fill-destructive" /> By <a href="https://github.com/iamvisshu" target="\_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@iamvisshu</a>
       </footer>
     </main>
   );

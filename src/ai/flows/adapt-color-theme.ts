@@ -49,17 +49,11 @@ const promptText = `You are a color palette expert, skilled at creating visually
   - Cloudy: Use neutral, soft colors.
 
   The color theme should be represented as hex color codes. Ensure the colors complement each other and create a harmonious visual experience.
-
-  Return the colors as a JSON object with keys "primaryColor", "backgroundColor", and "accentColor".
-  Make sure the returned object satisfies this schema:
-  \`\`\`json
-  {{{schema}}}
-  \`\`\`
 `;
 
 const adaptColorThemePrompt = ai.definePrompt({
   name: 'adaptColorThemePrompt',
-  input: {schema: z.intersection(AdaptColorThemeInputSchema, z.object({schema: z.string()}))},
+  input: {schema: AdaptColorThemeInputSchema},
   output: {schema: AdaptColorThemeOutputSchema},
   prompt: promptText,
 });
@@ -71,10 +65,7 @@ const adaptColorThemeFlow = ai.defineFlow(
     outputSchema: AdaptColorThemeOutputSchema,
   },
   async input => {
-    const {output} = await adaptColorThemePrompt({
-      ...input,
-      schema: JSON.stringify(AdaptColorThemeOutputSchema.shape, null, 2),
-    });
+    const {output} = await adaptColorThemePrompt(input);
     return output!;
   }
 );

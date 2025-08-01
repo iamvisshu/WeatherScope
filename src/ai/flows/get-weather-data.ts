@@ -42,16 +42,26 @@ const getWeatherDataFlow = ai.defineFlow(
     try {
       const llmResponse = await getWeatherPrompt(input);
   
+      // The weather data is in the tool's output part of the response
       const weatherToolResponse = llmResponse.toolRequest?.output;
       if (weatherToolResponse) {
         return weatherToolResponse as GetWeatherDataOutput;
       }
+
+      // If the model didn't use the tool but returned structured data directly
+      const llmOutput = llmResponse.output;
+      if (llmOutput) {
+          return llmOutput;
+      }
+      
+      // If neither is present, throw to fallback.
+      throw new Error("LLM did not return tool request or valid output.");
+
     } catch (error) {
       console.error("LLM call failed, likely due to rate limiting. Using fallback.", error);
+       // Fallback: call the tool directly if the LLM fails
+      const fallback = await getCurrentWeather(input);
+      return fallback;
     }
-
-    // Fallback or error handling if the tool doesn't respond as expected or if the LLM call fails
-    const fallback = await getCurrentWeather(input);
-    return fallback;
   }
 );
