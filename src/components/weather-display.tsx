@@ -1,14 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { WeatherData } from "@/lib/weather-data";
 import { WeatherIcon } from "./weather-icon";
-import { Droplets, Thermometer, Wind, Sun, Moon, CloudSun } from "lucide-react";
+import { Droplets, Thermometer, Wind, Sun, Moon, CloudSun, CalendarDays } from "lucide-react";
 import { TemperatureGauge } from './temperature-gauge';
 import { UVIndexIndicator } from './uv-index-indicator';
 import { WindIndicator } from './wind-indicator';
 import { WeatherAnimations } from './weather-animations';
 import { HumidityIndicator } from './humidity-indicator';
 import { FeelsLike } from './feels-like';
+import { WeatherAlerts } from './weather-alerts';
+import { ForecastCard } from './forecast-card';
 
 interface WeatherDisplayProps {
   weatherData: WeatherData;
@@ -33,7 +36,9 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
     humidity,
     windSpeed,
     uvIndex,
-    isDay
+    isDay,
+    forecast,
+    alerts
   } = weatherData;
 
   const uvInfo = getUVIndexInfo(uvIndex);
@@ -67,6 +72,11 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Alerts Section */}
+        {alerts && alerts.length > 0 && (
+          <WeatherAlerts alerts={alerts} />
+        )}
+
         {/* Description */}
         <p className={`text-center italic text-base px-4 ${isDaytime ? 'text-gray-600 dark:text-gray-300' : 'text-blue-100'}`}>
           "{description}"
@@ -106,10 +116,30 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
           </div>
         </div>
 
+        {/* 7-Day Forecast */}
+        {forecast && forecast.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-4">
+              <CalendarDays className={`w-5 h-5 ${isDaytime ? 'text-gray-600' : 'text-blue-200'}`} />
+              <h3 className={`font-semibold ${isDaytime ? 'text-gray-700 dark:text-gray-200' : 'text-blue-100'}`}>
+                7-Day Forecast
+              </h3>
+            </div>
+            <ScrollArea className="w-full whitespace-nowrap rounded-lg">
+              <div className="flex w-max space-x-4 pb-4">
+                {forecast.map((day, i) => (
+                  <ForecastCard key={i} day={day} />
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
+        )}
+
         {/* Additional Info */}
         <div className={`text-center text-xs pt-2 border-t ${isDaytime
-            ? 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
-            : 'border-blue-800 text-blue-300'
+          ? 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
+          : 'border-blue-800 text-blue-300'
           }`}>
           Real-time weather data • Updated now
         </div>

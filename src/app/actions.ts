@@ -45,6 +45,13 @@ const themeMap: Record<WeatherCondition, ColorTheme> = {
   },
 };
 
+/**
+ * Fetches real-time weather data for a specified city.
+ * 
+ * @param city - The name of the city to fetch weather for.
+ * @returns A promise that resolves to the WeatherData object.
+ * @throws {Error} If the city is not found, network fails, or API is limited.
+ */
 export async function getRealtimeWeather(city: string): Promise<WeatherData> {
   try {
     return await getWeatherData({ city });
@@ -71,6 +78,12 @@ export async function getRealtimeWeather(city: string): Promise<WeatherData> {
   }
 }
 
+/**
+ * Determines an adaptive color theme based on the weather conditions.
+ * 
+ * @param weatherData - The current weather data object.
+ * @returns A promise that resolves to a ColorTheme object containing primary, background, and accent colors.
+ */
 export async function getAdaptiveTheme(weatherData: WeatherData): Promise<ColorTheme> {
   // Return a theme from our predefined map based on the weather condition.
   // Default to the "Partly Cloudy" theme if the condition is somehow unknown.

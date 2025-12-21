@@ -159,7 +159,7 @@ export const getCurrentWeather = ai.defineTool(
         return { ...cachedWeather, city: `${name}, ${country}` };
       }
 
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,wind_speed_10m,uv_index&wind_speed_unit=kmh&timeformat=unixtime&timezone=auto`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,wind_speed_10m,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&forecast_days=7&wind_speed_unit=kmh&timeformat=unixtime&timezone=auto`;
 
       const weatherResponse = await fetchWithRetry(weatherUrl, {}, 2);
       const weatherApiData = await weatherResponse.json();
@@ -179,6 +179,34 @@ export const getCurrentWeather = ai.defineTool(
         description: 'Clear skies and bright sunshine.',
       };
 
+      // Process Forecast Data
+      const daily = weatherApiData.daily;
+      const forecast = daily.time.map((time: number, index: number) => {
+        const code = daily.weather_code[index];
+        const info = wmoCodeMap[code] || { condition: 'Partly Cloudy' };
+
+        // Convert unix timestamp to YYYY-MM-DD
+        const date = new Date(time * 1000).toISOString().split('T')[0];
+
+        return {
+          date,
+          tempMax: Math.round(daily.temperature_2m_max[index]),
+          tempMin: Math.round(daily.temperature_2m_min[index]),
+          precipitation: daily.precipitation_sum[index],
+          code: code,
+          condition: info.condition,
+        };
+      });
+
+      // Generate Alerts
+      const { generateAlerts } = await import('@/lib/alert-rules');
+      const alerts = generateAlerts({
+        temperature,
+        windSpeed,
+        uvIndex,
+        condition: weatherInfo.condition,
+      });
+
       const result = {
         city: `${name}, ${country}`,
         temperature: Math.round(temperature),
@@ -189,6 +217,8 @@ export const getCurrentWeather = ai.defineTool(
         isDay: isDay || 1,
         condition: weatherInfo.condition,
         description: weatherInfo.description,
+        forecast,
+        alerts,
       };
 
       // Cache the processed weather data

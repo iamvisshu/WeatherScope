@@ -5,8 +5,10 @@ WeatherScope is a dynamic and visually appealing weather application that provid
 ## ⭐ Features
 
 - **Real-time Weather Data**: Get current weather information for cities around the world.
-- **Adaptive UI**: The color scheme of the entire application dynamically adapts to the weather conditions (e.g., warm colors for sunny days, cool tones for rainy weather).
-- **Responsive Design**: The application is fully responsive and works seamlessly on desktops, tablets, and mobile devices.
+- **7-Day Forecast**: Plan ahead with a detailed weekly weather outlook.
+- **Weather Alerts**: Stay safe with real-time warnings for extreme temperatures, high UV, and storms.
+- **Adaptive UI**: The color scheme dynamically adapts to weather conditions and day/night cycles.
+- **Responsive Design**: Flawless experience across mobile, tablet, and desktop devices.
 - **AI-Powered**: Leverages Google's AI through Genkit to provide weather data and generate adaptive color themes.
 
 ## 🔨 Tech Stack

@@ -8,7 +8,7 @@ import type { WeatherData } from "@/lib/weather-data";
 import { getAdaptiveTheme, getRealtimeWeather, type ColorTheme } from "@/app/actions";
 import { useTheme } from '@/components/theme-provider';
 import { hexToHsl } from "@/lib/utils";
-import { LoadingAnimation } from "@/components/loading-animation";
+import { WeatherSkeleton } from "@/components/weather-skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sun, Heart } from "lucide-react";
 
@@ -95,7 +95,7 @@ export default function Home() {
 
         <div className="min-h-[360px] flex items-center justify-center">
           {isLoading ? (
-            <LoadingAnimation />
+            <WeatherSkeleton />
           ) : weatherData ? (
             <WeatherDisplay weatherData={weatherData} />
           ) : (
@@ -106,7 +106,7 @@ export default function Home() {
           )}
         </div>
       </div>
-       <footer className="text-center text-sm text-muted-foreground mt-8">
+      <footer className="text-center text-sm text-muted-foreground mt-8">
         © 2025 Created With <Heart className="inline-block h-4 w-4 text-destructive fill-destructive" /> By <a href="https://github.com/iamvisshu" target="\_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@iamvisshu</a>
       </footer>
     </main>
