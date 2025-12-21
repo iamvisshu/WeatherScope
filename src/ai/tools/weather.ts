@@ -70,13 +70,21 @@ export const getCurrentWeather = ai.defineTool(
       const { latitude, longitude, name, country } = geoData.results[0];
 
       // 2. Fetch weather data using coordinates
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=kmh&timeformat=unixtime`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,wind_speed_10m,uv_index&wind_speed_unit=kmh&timeformat=unixtime&timezone=auto`;
 
       const weatherResponse = await fetch(weatherUrl, { signal: controller.signal });
       if (!weatherResponse.ok) throw new Error(`Failed to fetch weather data: ${weatherResponse.statusText}`);
       const weatherApiData = await weatherResponse.json();
 
-      const { temperature_2m: temperature, relative_humidity_2m: humidity, weather_code, wind_speed_10m: windSpeed } = weatherApiData.current;
+      const {
+        temperature_2m: temperature,
+        apparent_temperature: apparentTemperature,
+        relative_humidity_2m: humidity,
+        weather_code,
+        wind_speed_10m: windSpeed,
+        uv_index: uvIndex,
+        is_day: isDay
+      } = weatherApiData.current;
 
       const weatherInfo = wmoCodeMap[weather_code] || {
         condition: "Sunny",
@@ -87,8 +95,11 @@ export const getCurrentWeather = ai.defineTool(
       return {
         city: `${name}, ${country}`, // e.g., "Paris, France"
         temperature: Math.round(temperature),
+        apparentTemperature: Math.round(apparentTemperature),
         humidity,
         windSpeed: Math.round(windSpeed),
+        uvIndex: Math.round(uvIndex || 0),
+        isDay: isDay || 1,
         condition: weatherInfo.condition,
         description: weatherInfo.description,
       };
@@ -98,8 +109,11 @@ export const getCurrentWeather = ai.defineTool(
       return {
         city: input.city,
         temperature: 20,
+        apparentTemperature: 22,
         humidity: 60,
         windSpeed: 10,
+        uvIndex: 5,
+        isDay: 1,
         condition: 'Sunny' as WeatherCondition,
         description: "Could not fetch live data. Displaying default.",
       };
