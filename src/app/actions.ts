@@ -2,6 +2,13 @@
 
 import { getWeatherData } from '@/ai/flows/get-weather-data';
 import type { WeatherData, WeatherCondition } from '@/lib/weather-data';
+import {
+  LocationNotFoundError,
+  NetworkTimeoutError,
+  APIQuotaExceededError,
+  InvalidInputError,
+  WeatherAPIError,
+} from '@/lib/errors';
 
 export interface ColorTheme {
   primaryColor: string;
@@ -39,7 +46,29 @@ const themeMap: Record<WeatherCondition, ColorTheme> = {
 };
 
 export async function getRealtimeWeather(city: string): Promise<WeatherData> {
-  return getWeatherData({ city });
+  try {
+    return await getWeatherData({ city });
+  } catch (err: any) {
+    // Map internal errors to user-friendly messages
+    if (err instanceof LocationNotFoundError) {
+      throw new Error(`Couldn't find "${city}". Try a different spelling or a nearby city.`);
+    }
+    if (err instanceof NetworkTimeoutError) {
+      throw new Error('Network timeout. Please check your connection and try again.');
+    }
+    if (err instanceof APIQuotaExceededError) {
+      throw new Error('Weather service is rate-limiting requests. Please try again in a minute.');
+    }
+    if (err instanceof InvalidInputError) {
+      throw new Error('Invalid input. Please enter a city name.');
+    }
+    if (err instanceof WeatherAPIError) {
+      throw new Error('Weather data is currently unavailable. Please try again later.');
+    }
+
+    // Unknown error
+    throw new Error('An unexpected error occurred while fetching weather. Please try again.');
+  }
 }
 
 export async function getAdaptiveTheme(weatherData: WeatherData): Promise<ColorTheme> {

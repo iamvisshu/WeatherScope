@@ -5,6 +5,11 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { WeatherData, WeatherDataSchema, WeatherCondition } from '@/lib/weather-data';
+import {
+  LocationNotFoundError,
+  NetworkTimeoutError,
+  WeatherAPIError
+} from '@/lib/errors';
 
 // A map of WMO weather codes to our app's WeatherCondition
 const wmoCodeMap: Record<number, { condition: WeatherCondition; description: string; }> = {
@@ -51,20 +56,86 @@ export const getCurrentWeather = ai.defineTool(
   async (input) => {
     console.log(`Getting real-time weather for ${input.city}`);
 
-    // Add a timeout to the fetch calls to prevent the tool from hanging
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    // Helper: fetch with timeout + retry logic for transient failures
+    const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 2, backoffMs = 500) => {
+      let attempt = 0;
+      while (attempt <= retries) {
+        attempt += 1;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        try {
+          const response = await fetch(url, { ...options, signal: controller.signal });
+
+          // Rate limiting
+          if (response.status === 429) {
+            throw new APIQuotaExceededError();
+          }
+
+          // Server errors retry
+          if (response.status >= 500 && response.status < 600) {
+            const msg = `Server error: ${response.status} ${response.statusText}`;
+            if (attempt <= retries) {
+              console.warn(`${msg}. Retrying (${attempt}/${retries})...`);
+              await new Promise((r) => setTimeout(r, backoffMs * attempt));
+              continue;
+            }
+            throw new WeatherAPIError(msg, response.status);
+          }
+
+          if (!response.ok) {
+            // For client errors (4xx except 429), surface as WeatherAPIError
+            const msg = `Request failed: ${response.status} ${response.statusText}`;
+            throw new WeatherAPIError(msg, response.status);
+          }
+
+          return response;
+        } catch (err: any) {
+          // Timeout / Abort
+          if (err.name === 'AbortError') {
+            console.error('Request timed out', url);
+            if (attempt <= retries) {
+              console.warn(`Timeout, retrying (${attempt}/${retries}) for ${url}`);
+              await new Promise((r) => setTimeout(r, backoffMs * attempt));
+              continue;
+            }
+            throw new NetworkTimeoutError();
+          }
+
+          // API quota errors should bubble up
+          if (err instanceof APIQuotaExceededError) throw err;
+
+          // Network-level errors (DNS, connection reset, etc.) - retry
+          if (attempt <= retries) {
+            console.warn(`Network error on attempt ${attempt} for ${url}. Retrying...`, err.message || err);
+            await new Promise((r) => setTimeout(r, backoffMs * attempt));
+            continue;
+          }
+
+          // Give up and rethrow
+          throw err;
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      }
+
+      // Shouldn't reach here
+      throw new WeatherAPIError('Exceeded retries while fetching data');
+    };
 
     try {
+      // Validate input
+      if (!input.city || input.city.trim().length === 0) {
+        throw new InvalidInputError(input.city ?? '');
+      }
+
       // 1. Geocode city to get latitude and longitude
       const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input.city)}&count=1&language=en&format=json`;
 
-      const geoResponse = await fetch(geoUrl, { signal: controller.signal });
-      if (!geoResponse.ok) throw new Error(`Failed to geocode city: ${geoResponse.statusText}`);
+      const geoResponse = await fetchWithRetry(geoUrl, {}, 2);
       const geoData = await geoResponse.json();
 
       if (!geoData.results || geoData.results.length === 0) {
-        throw new Error(`Could not find location: ${input.city}`);
+        throw new LocationNotFoundError(input.city);
       }
 
       const { latitude, longitude, name, country } = geoData.results[0];
@@ -72,8 +143,7 @@ export const getCurrentWeather = ai.defineTool(
       // 2. Fetch weather data using coordinates
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,wind_speed_10m,uv_index&wind_speed_unit=kmh&timeformat=unixtime&timezone=auto`;
 
-      const weatherResponse = await fetch(weatherUrl, { signal: controller.signal });
-      if (!weatherResponse.ok) throw new Error(`Failed to fetch weather data: ${weatherResponse.statusText}`);
+      const weatherResponse = await fetchWithRetry(weatherUrl, {}, 2);
       const weatherApiData = await weatherResponse.json();
 
       const {
@@ -83,17 +153,16 @@ export const getCurrentWeather = ai.defineTool(
         weather_code,
         wind_speed_10m: windSpeed,
         uv_index: uvIndex,
-        is_day: isDay
+        is_day: isDay,
       } = weatherApiData.current;
 
       const weatherInfo = wmoCodeMap[weather_code] || {
-        condition: "Sunny",
-        description: "Clear skies and bright sunshine.",
+        condition: 'Sunny',
+        description: 'Clear skies and bright sunshine.',
       };
 
-      // Enhance the description to include the actual location found
       return {
-        city: `${name}, ${country}`, // e.g., "Paris, France"
+        city: `${name}, ${country}`,
         temperature: Math.round(temperature),
         apparentTemperature: Math.round(apparentTemperature),
         humidity,
@@ -104,21 +173,21 @@ export const getCurrentWeather = ai.defineTool(
         description: weatherInfo.description,
       };
     } catch (error: any) {
-      console.error("Error fetching real-time weather:", error.message);
-      // Fallback to a default in case of API error
-      return {
-        city: input.city,
-        temperature: 20,
-        apparentTemperature: 22,
-        humidity: 60,
-        windSpeed: 10,
-        uvIndex: 5,
-        isDay: 1,
-        condition: 'Sunny' as WeatherCondition,
-        description: "Could not fetch live data. Displaying default.",
-      };
-    } finally {
-      clearTimeout(timeoutId);
+      // Re-throw known error types for upstream handling
+      if (error instanceof LocationNotFoundError) throw error;
+      if (error instanceof NetworkTimeoutError) throw error;
+      if (error instanceof APIQuotaExceededError) throw error;
+      if (error instanceof InvalidInputError) throw error;
+
+      // API related errors
+      if (error instanceof WeatherAPIError) {
+        console.error('Weather API error:', error.message);
+        throw error;
+      }
+
+      // Unknown/unexpected error
+      console.error('Unexpected error fetching weather:', error?.message || error);
+      throw new WeatherAPIError(`Unable to fetch weather data: ${error?.message || String(error)}`);
     }
   }
 );

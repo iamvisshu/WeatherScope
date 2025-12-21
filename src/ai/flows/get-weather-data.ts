@@ -52,10 +52,16 @@ const getWeatherDataFlow = ai.defineFlow(
       throw new Error("LLM did not return valid output.");
 
     } catch (error) {
-      console.error("LLM call failed, likely due to rate limiting. Using fallback.", error);
-      // Fallback: call the tool directly if the LLM fails
-      const fallback = await getCurrentWeather(input);
-      return fallback;
+      console.error('LLM call failed:', error);
+      // Attempt direct tool fallback, but surface any errors to the caller (no generic fallback data)
+      try {
+        const direct = await getCurrentWeather(input);
+        return direct;
+      } catch (err) {
+        console.error('Direct tool fallback failed:', err);
+        // Re-throw so callers (UI) can decide how to present the error to users
+        throw err;
+      }
     }
   }
 );
