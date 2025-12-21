@@ -6,8 +6,10 @@ import { LocationSelector } from "@/components/location-selector";
 import { WeatherDisplay } from "@/components/weather-display";
 import type { WeatherData } from "@/lib/weather-data";
 import { getAdaptiveTheme, getRealtimeWeather, type ColorTheme } from "@/app/actions";
+import { useTheme } from '@/components/theme-provider';
 import { hexToHsl } from "@/lib/utils";
 import { LoadingAnimation } from "@/components/loading-animation";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Sun, Heart } from "lucide-react";
 
 export default function Home() {
@@ -18,6 +20,7 @@ export default function Home() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     setIsClient(true);
@@ -31,6 +34,15 @@ export default function Home() {
         try {
           const weather = await getRealtimeWeather(city);
           setWeatherData(weather);
+
+          // Set global day/night theme based on API `isDay` field
+          try {
+            if (weather?.isDay !== undefined) {
+              setTheme(weather.isDay === 1 ? 'day' : 'night');
+            }
+          } catch (e) {
+            // ignore if theme provider not mounted
+          }
 
           const theme = await getAdaptiveTheme(weather);
           setColorTheme(theme);
@@ -68,13 +80,15 @@ export default function Home() {
       style={dynamicStyles}
     >
       <div className="w-full max-w-md mx-auto space-y-6">
-        <header className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold font-headline text-primary tracking-tight">
-            WeatherScope
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">
-            Your window to the world's weather
-          </p>
+        <header className="text-center w-full">
+          <div className="mx-auto max-w-2xl">
+            <h1 className="text-4xl sm:text-5xl font-bold font-headline text-primary tracking-tight">
+              WeatherScope
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-2">
+              Your window to the world's weather
+            </p>
+          </div>
         </header>
 
         {isClient && <LocationSelector onCitySelect={setCity} disabled={isLoading} />}

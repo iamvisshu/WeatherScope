@@ -43,11 +43,12 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Slightly lighter dark background for better contrast with UI elements */
+    --background: 222.2 20% 9%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 20% 11%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 20% 11%;
     --popover-foreground: 210 40% 98%;
     --primary: 197 71% 73%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -84,5 +85,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Smoothly transition theme-critical properties */
+  .theme-transition, .theme-transition * {
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out, border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
   }
 }
