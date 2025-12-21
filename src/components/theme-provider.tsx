@@ -11,13 +11,13 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const THEME_STORAGE_KEY = 'weather_scope_theme';
+const THEME_STORAGE_KEY = 'weather_scope_theme_v2';
 const TRANSITION_CLASS = 'theme-transition';
 const TRANSITION_MS = 300;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Initialize to 'system' to ensure server and client render the same initial markup
-  const [theme, setThemeState] = useState<ThemePreference>('system');
+  // Initialize to 'day' (light theme) as default
+  const [theme, setThemeState] = useState<ThemePreference>('day');
   const [mounted, setMounted] = useState(false);
 
   // On mount, read persisted preference and update theme (avoids hydration mismatch)

@@ -5,14 +5,18 @@ import { MapPin, Droplets } from "lucide-react";
 
 interface ForecastCardProps {
     day: ForecastDay;
+    isDaytime?: boolean;
 }
 
-export function ForecastCard({ day }: ForecastCardProps) {
+export function ForecastCard({ day, isDaytime = true }: ForecastCardProps) {
     const dateObj = new Date(day.date);
     const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
 
     return (
-        <Card className="min-w-[120px] bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-0 shadow-sm shrink-0">
+        <Card className={`min-w-[120px] shadow-sm shrink-0 transition-colors ${isDaytime
+            ? 'bg-white border text-slate-900 border-slate-100 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100'
+            : 'bg-white/10 text-white border border-white/20 dark:bg-black/60 dark:border-white/10'
+            }`}>
             <CardContent className="p-4 flex flex-col items-center gap-2">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                     {dayName}
@@ -25,7 +29,7 @@ export function ForecastCard({ day }: ForecastCardProps) {
                 </div>
 
                 {day.precipitation > 0 && (
-                    <div className="flex items-center gap-1 text-xs text-blue-500 font-medium">
+                    <div className="flex items-center gap-1 text-xs font-medium text-blue-500">
                         <Droplets className="w-3 h-3" />
                         <span>{day.precipitation}mm</span>
                     </div>

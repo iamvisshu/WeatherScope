@@ -6,7 +6,7 @@ import { LocationSelector } from "@/components/location-selector";
 import { WeatherDisplay } from "@/components/weather-display";
 import type { WeatherData } from "@/lib/weather-data";
 import { getAdaptiveTheme, getRealtimeWeather, type ColorTheme } from "@/app/actions";
-import { useTheme } from '@/components/theme-provider';
+
 import { hexToHsl } from "@/lib/utils";
 import { WeatherSkeleton } from "@/components/weather-skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -20,7 +20,7 @@ export default function Home() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const { setTheme } = useTheme();
+
 
   useEffect(() => {
     setIsClient(true);
@@ -35,14 +35,7 @@ export default function Home() {
           const weather = await getRealtimeWeather(city);
           setWeatherData(weather);
 
-          // Set global day/night theme based on API `isDay` field
-          try {
-            if (weather?.isDay !== undefined) {
-              setTheme(weather.isDay === 1 ? 'day' : 'night');
-            }
-          } catch (e) {
-            // ignore if theme provider not mounted
-          }
+
 
           const theme = await getAdaptiveTheme(weather);
           setColorTheme(theme);
@@ -79,7 +72,7 @@ export default function Home() {
       className="flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-8 md:p-12 bg-background transition-all duration-1000 ease-in-out"
       style={dynamicStyles}
     >
-      <div className="w-full max-w-md mx-auto space-y-6">
+      <div className="w-full max-w-6xl mx-auto space-y-6">
         <header className="text-center w-full">
           <div className="mx-auto max-w-2xl">
             <h1 className="text-4xl sm:text-5xl font-bold font-headline text-primary tracking-tight">

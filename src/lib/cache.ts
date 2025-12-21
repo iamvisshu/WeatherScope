@@ -13,7 +13,7 @@ class SimpleCache {
   private hits = 0;
   private misses = 0;
 
-  constructor() {}
+  constructor() { }
 
   get<T>(key: string): T | null {
     const entry = this.store.get(key);
@@ -53,5 +53,5 @@ class SimpleCache {
 
 export const cache = new SimpleCache();
 
-// Standard TTL for weather data (15 minutes)
-export const DEFAULT_WEATHER_TTL_MS = 15 * 60 * 1000; // 15 minutes
+// Standard TTL for weather data (5 minutes)
+export const DEFAULT_WEATHER_TTL_MS = 1 * 60 * 1000; // 1 minute (reduced for better day/night updates)

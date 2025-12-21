@@ -30,7 +30,7 @@ export function LocationSelector({ onCitySelect, disabled }: LocationSelectorPro
     setSelectedCountry(country);
     setSelectedCity(null); // Reset city when country changes
   };
-  
+
   const handleCityChange = (cityName: string) => {
     setSelectedCity(cityName);
     onCitySelect(cityName);
@@ -56,10 +56,10 @@ export function LocationSelector({ onCitySelect, disabled }: LocationSelectorPro
       <div className="space-y-2">
         <label htmlFor="country-select" className="text-sm font-medium text-muted-foreground">Country</label>
         <Select onValueChange={handleCountryChange} disabled={disabled}>
-          <SelectTrigger id="country-select" className="w-full bg-card/80 backdrop-blur-sm">
+          <SelectTrigger id="country-select" className="w-full bg-white dark:bg-slate-900 border-input text-foreground shadow-sm">
             <SelectValue placeholder="Select a country" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover text-popover-foreground dark:bg-slate-900 dark:text-slate-100 border-border dark:border-slate-700">
             {countries.map((country) => (
               <SelectItem key={country.name} value={country.name}>
                 {country.name}
@@ -75,10 +75,10 @@ export function LocationSelector({ onCitySelect, disabled }: LocationSelectorPro
           onValueChange={handleCityChange}
           disabled={!selectedCountry || disabled}
         >
-          <SelectTrigger id="city-select" className="w-full bg-card/80 backdrop-blur-sm">
+          <SelectTrigger id="city-select" className="w-full bg-white dark:bg-slate-900 border-input text-foreground shadow-sm">
             <SelectValue placeholder="Select a city" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover text-popover-foreground dark:bg-slate-900 dark:text-slate-100 border-border dark:border-slate-700">
             {selectedCountry?.cities.map((city) => (
               <SelectItem key={city} value={city}>
                 {city}

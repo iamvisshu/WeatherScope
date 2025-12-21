@@ -30,21 +30,24 @@ export function TemperatureGauge({ value, min = -10, max = 40, size = 120 }: Tem
           <path d="M -45 20 A 70 70 0 0 1 45 20" fill="none" stroke="#e6eef9" strokeWidth="10" strokeLinecap="round" />
           <path d="M -45 20 A 70 70 0 0 1 45 20" fill="none" stroke="url(#tempGrad)" strokeWidth="10" strokeLinecap="round" strokeDasharray="250" strokeDashoffset={`${250 - 250 * ratio}`} />
 
-          <motion.line
-            x1="0"
-            y1="0"
-            x2="0"
-            y2="-45"
-            stroke="#111"
-            strokeWidth="2"
-            strokeLinecap="round"
+
+          <motion.g
             initial={false}
             animate={{ rotate: angle }}
             transition={useReducedMotion() ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 18 }}
-            style={{ transformOrigin: 'center' }}
-          />
-
-          <circle cx="0" cy="0" r="4" fill="#111" />
+            style={{ transformOrigin: '0px 0px' }}
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="-45"
+              stroke="#111"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <circle cx="0" cy="0" r="4" fill="#111" />
+          </motion.g>
         </g>
       </svg>
       <div className="text-center">

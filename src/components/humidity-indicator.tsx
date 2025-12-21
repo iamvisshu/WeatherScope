@@ -12,10 +12,10 @@ export function HumidityIndicator({ humidity }: HumidityIndicatorProps) {
   const percent = clamped;
 
   return (
-    <div className="w-full max-w-xs">
-      <div className="flex items-center justify-between mb-2">
-        <div className="font-semibold">Humidity</div>
-        <div className="text-sm text-muted-foreground">{Math.round(clamped)}%</div>
+    <div className="w-full">
+      <div className="flex flex-col mb-2">
+        <div className="font-semibold text-sm">Humidity</div>
+        <div className="text-xl font-bold">{Math.round(clamped)}%</div>
       </div>
 
       <div className="w-full h-20 bg-muted rounded-lg overflow-hidden relative">

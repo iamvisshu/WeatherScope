@@ -45,102 +45,102 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
   const isDaytime = isDay === 1;
 
   return (
-    <Card className={`w-full max-w-2xl transition-all duration-500 shadow-xl animate-in fade-in zoom-in-95 
+
+    <Card className={`w-full max-w-6xl transition-all duration-500 shadow-xl animate-in fade-in zoom-in-95 
       ${isDaytime
-        ? 'bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 border-blue-200 dark:border-blue-800'
-        : 'bg-gradient-to-br from-indigo-950 to-purple-950 border-purple-800 text-white'
+        ? 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-900 dark:to-slate-800 border-blue-200 dark:border-slate-700'
+        : 'bg-gradient-to-br from-slate-100 to-indigo-100 dark:from-slate-900 dark:to-indigo-950 border-slate-200 dark:border-indigo-900'
       }`}
     >
-      <CardHeader className="text-center pb-4">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          {isDaytime ? (
-            <Sun className="w-6 h-6 text-yellow-500 animate-pulse" />
-          ) : (
-            <Moon className="w-6 h-6 text-blue-300" />
-          )}
-          <Badge variant="outline" className={isDaytime ? "border-yellow-500 text-yellow-700 dark:text-yellow-300" : "border-blue-300 text-blue-200"}>
-            {isDaytime ? "Daytime" : "Nighttime"}
-          </Badge>
-        </div>
-        <WeatherIcon condition={condition} className="w-24 h-24 mx-auto text-primary drop-shadow-lg" />
-        <CardTitle className={`text-4xl font-bold mt-4 ${isDaytime ? 'text-gray-800 dark:text-gray-100' : 'text-white'}`}>
-          {city}
-        </CardTitle>
-        <CardDescription className={`text-xl font-medium ${isDaytime ? 'text-gray-600 dark:text-gray-300' : 'text-blue-200'}`}>
-          {condition}
-        </CardDescription>
-      </CardHeader>
+      <CardContent className="p-6 md:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
 
-      <CardContent className="space-y-6">
-        {/* Alerts Section */}
-        {alerts && alerts.length > 0 && (
-          <WeatherAlerts alerts={alerts} />
-        )}
-
-        {/* Description */}
-        <p className={`text-center italic text-base px-4 ${isDaytime ? 'text-gray-600 dark:text-gray-300' : 'text-blue-100'}`}>
-          "{description}"
-        </p>
-
-        {/* Main Temperature Display */}
-        <div className="flex flex-col items-center justify-center gap-2 py-4">
-          <div className="flex items-baseline gap-2">
-            <span className={`text-6xl md:text-7xl font-bold ${isDaytime ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
-              {temperature}°
-            </span>
-            <span className={`text-2xl ${isDaytime ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'}`}>C</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CloudSun className={`w-4 h-4 ${isDaytime ? 'text-gray-500' : 'text-blue-300'}`} />
-            {/* Feels-like display with tooltip and accessibility */}
-            <FeelsLike value={apparentTemperature} unit="C" />
-          </div>
-        </div>
-
-        {/* Weather Visualizations */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
-            <TemperatureGauge value={temperature} />
-          </div>
-
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
-            <UVIndexIndicator uv={uvIndex} />
-          </div>
-
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
-            <WindIndicator speed={windSpeed} />
-          </div>
-
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
-            <HumidityIndicator humidity={humidity} />
-          </div>
-        </div>
-
-        {/* 7-Day Forecast */}
-        {forecast && forecast.length > 0 && (
-          <div className="mt-8">
-            <div className="flex items-center gap-2 mb-4">
-              <CalendarDays className={`w-5 h-5 ${isDaytime ? 'text-gray-600' : 'text-blue-200'}`} />
-              <h3 className={`font-semibold ${isDaytime ? 'text-gray-700 dark:text-gray-200' : 'text-blue-100'}`}>
-                7-Day Forecast
-              </h3>
+          {/* Left Column: Main Weather Info */}
+          <div className="flex flex-col items-center lg:items-center justify-center space-y-6">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Badge variant="outline" className={isDaytime ? "border-yellow-600 text-yellow-700 dark:text-yellow-400 bg-yellow-50/50 dark:bg-yellow-900/20" : "border-indigo-300 text-indigo-700 dark:text-indigo-300 bg-indigo-50/50 dark:bg-indigo-900/30"}>
+                  {isDaytime ? "DayTime" : "NightTime"}
+                </Badge>
+              </div>
+              <WeatherIcon condition={condition} className="w-32 h-32 md:w-40 md:h-40 mx-auto text-primary drop-shadow-2xl" />
+              <CardTitle className="text-4xl md:text-5xl font-bold mt-6 text-slate-900 dark:text-white">
+                {city}
+              </CardTitle>
+              <CardDescription className="text-xl md:text-2xl font-medium mt-2 text-slate-600 dark:text-slate-300">
+                {condition}
+              </CardDescription>
+              <p className="text-center italic text-base mt-2 text-slate-500 dark:text-slate-400">
+                "{description}"
+              </p>
             </div>
-            <ScrollArea className="w-full whitespace-nowrap rounded-lg">
-              <div className="flex w-max space-x-4 pb-4">
+
+            {/* Main Temperature */}
+            <div className="flex flex-col items-center justify-center gap-2">
+              <div className="flex items-start gap-1">
+                <span className="text-8xl md:text-9xl font-bold tracking-tighter text-slate-900 dark:text-white">
+                  {temperature}
+                </span>
+                <span className="text-3xl mt-4 text-slate-600 dark:text-slate-400">°C</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-full px-4 py-1 shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <FeelsLike value={apparentTemperature} unit="C" />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Visualizations & Detail Metrics */}
+          <div className="flex flex-col justify-center space-y-6">
+            {/* Alerts - Prominent at top of right col */}
+            {alerts && alerts.length > 0 && (
+              <WeatherAlerts alerts={alerts} />
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col items-center justify-between p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+                <TemperatureGauge value={temperature} />
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+                <UVIndexIndicator uv={uvIndex} />
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+                <WindIndicator speed={windSpeed} />
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+                <HumidityIndicator humidity={humidity} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section: 7-Day Forecast */}
+        {forecast && forecast.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/50">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  7-Day Forecast
+                </h3>
+              </div>
+            </div>
+
+            <ScrollArea className="w-full whitespace-nowrap rounded-xl pb-4">
+              <div className="flex w-max space-x-4 min-w-full justify-between">
                 {forecast.map((day, i) => (
-                  <ForecastCard key={i} day={day} />
+                  <ForecastCard key={i} day={day} isDaytime={isDaytime} />
                 ))}
               </div>
-              <ScrollBar orientation="horizontal" />
+              <ScrollBar orientation="horizontal" className="pt-2" />
             </ScrollArea>
           </div>
         )}
 
-        {/* Additional Info */}
-        <div className={`text-center text-xs pt-2 border-t ${isDaytime
-          ? 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
-          : 'border-blue-800 text-blue-300'
-          }`}>
+        {/* Footer Info */}
+        <div className="text-center text-xs mt-8 text-slate-500 dark:text-slate-400">
           Real-time weather data • Updated now
         </div>
       </CardContent>

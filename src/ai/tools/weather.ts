@@ -214,7 +214,7 @@ export const getCurrentWeather = ai.defineTool(
         humidity,
         windSpeed: Math.round(windSpeed),
         uvIndex: Math.round(uvIndex || 0),
-        isDay: isDay || 1,
+        isDay: isDay ?? 1,
         condition: weatherInfo.condition,
         description: weatherInfo.description,
         forecast,
