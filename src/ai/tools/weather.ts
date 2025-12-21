@@ -2,8 +2,8 @@
 /**
  * @fileOverview A tool for fetching current weather data from a live API.
  */
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 import { WeatherData, WeatherDataSchema, WeatherCondition } from '@/lib/weather-data';
 
 // A map of WMO weather codes to our app's WeatherCondition
@@ -50,12 +50,16 @@ export const getCurrentWeather = ai.defineTool(
   },
   async (input) => {
     console.log(`Getting real-time weather for ${input.city}`);
-    
-    // 1. Geocode city to get latitude and longitude
-    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input.city)}&count=1&language=en&format=json`;
+
+    // Add a timeout to the fetch calls to prevent the tool from hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     try {
-      const geoResponse = await fetch(geoUrl);
+      // 1. Geocode city to get latitude and longitude
+      const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input.city)}&count=1&language=en&format=json`;
+
+      const geoResponse = await fetch(geoUrl, { signal: controller.signal });
       if (!geoResponse.ok) throw new Error(`Failed to geocode city: ${geoResponse.statusText}`);
       const geoData = await geoResponse.json();
 
@@ -63,24 +67,25 @@ export const getCurrentWeather = ai.defineTool(
         throw new Error(`Could not find location: ${input.city}`);
       }
 
-      const { latitude, longitude } = geoData.results[0];
+      const { latitude, longitude, name, country } = geoData.results[0];
 
       // 2. Fetch weather data using coordinates
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=kmh&timeformat=unixtime`;
 
-      const weatherResponse = await fetch(weatherUrl);
+      const weatherResponse = await fetch(weatherUrl, { signal: controller.signal });
       if (!weatherResponse.ok) throw new Error(`Failed to fetch weather data: ${weatherResponse.statusText}`);
       const weatherApiData = await weatherResponse.json();
-      
+
       const { temperature_2m: temperature, relative_humidity_2m: humidity, weather_code, wind_speed_10m: windSpeed } = weatherApiData.current;
-      
+
       const weatherInfo = wmoCodeMap[weather_code] || {
         condition: "Sunny",
         description: "Clear skies and bright sunshine.",
       };
 
+      // Enhance the description to include the actual location found
       return {
-        city: input.city,
+        city: `${name}, ${country}`, // e.g., "Paris, France"
         temperature: Math.round(temperature),
         humidity,
         windSpeed: Math.round(windSpeed),
@@ -95,9 +100,11 @@ export const getCurrentWeather = ai.defineTool(
         temperature: 20,
         humidity: 60,
         windSpeed: 10,
-        condition: 'Sunny',
+        condition: 'Sunny' as WeatherCondition,
         description: "Could not fetch live data. Displaying default.",
       };
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 );
