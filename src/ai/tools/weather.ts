@@ -8,8 +8,11 @@ import { WeatherData, WeatherDataSchema, WeatherCondition } from '@/lib/weather-
 import {
   LocationNotFoundError,
   NetworkTimeoutError,
+  APIQuotaExceededError,
+  InvalidInputError,
   WeatherAPIError
 } from '@/lib/errors';
+import { cache, DEFAULT_WEATHER_TTL_MS } from '@/lib/cache';
 
 // A map of WMO weather codes to our app's WeatherCondition
 const wmoCodeMap: Record<number, { condition: WeatherCondition; description: string; }> = {
@@ -128,19 +131,34 @@ export const getCurrentWeather = ai.defineTool(
         throw new InvalidInputError(input.city ?? '');
       }
 
-      // 1. Geocode city to get latitude and longitude
-      const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input.city)}&count=1&language=en&format=json`;
+      // 1. Geocode city to get latitude and longitude (cached)
+      const normalizedCity = input.city.trim().toLowerCase();
+      const geoCacheKey = `geocode:${normalizedCity}`;
 
-      const geoResponse = await fetchWithRetry(geoUrl, {}, 2);
-      const geoData = await geoResponse.json();
+      let geoData: any = cache.get<any>(geoCacheKey);
+      if (!geoData) {
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input.city)}&count=1&language=en&format=json`;
+        const geoResponse = await fetchWithRetry(geoUrl, {}, 2);
+        geoData = await geoResponse.json();
 
-      if (!geoData.results || geoData.results.length === 0) {
-        throw new LocationNotFoundError(input.city);
+        if (!geoData.results || geoData.results.length === 0) {
+          throw new LocationNotFoundError(input.city);
+        }
+
+        // Cache geocoding results for the same TTL as weather data to avoid repeated lookups
+        cache.set(geoCacheKey, geoData, DEFAULT_WEATHER_TTL_MS);
       }
 
       const { latitude, longitude, name, country } = geoData.results[0];
 
-      // 2. Fetch weather data using coordinates
+      // 2. Fetch weather data using coordinates (cached)
+      const weatherCacheKey = `weather:${latitude}:${longitude}`;
+      const cachedWeather = cache.get<any>(weatherCacheKey);
+      if (cachedWeather) {
+        // Return cached, but ensure the city string reflects the geocoded name/country
+        return { ...cachedWeather, city: `${name}, ${country}` };
+      }
+
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,wind_speed_10m,uv_index&wind_speed_unit=kmh&timeformat=unixtime&timezone=auto`;
 
       const weatherResponse = await fetchWithRetry(weatherUrl, {}, 2);
@@ -161,7 +179,7 @@ export const getCurrentWeather = ai.defineTool(
         description: 'Clear skies and bright sunshine.',
       };
 
-      return {
+      const result = {
         city: `${name}, ${country}`,
         temperature: Math.round(temperature),
         apparentTemperature: Math.round(apparentTemperature),
@@ -172,6 +190,15 @@ export const getCurrentWeather = ai.defineTool(
         condition: weatherInfo.condition,
         description: weatherInfo.description,
       };
+
+      // Cache the processed weather data
+      try {
+        cache.set(weatherCacheKey, result, DEFAULT_WEATHER_TTL_MS);
+      } catch (cacheErr) {
+        console.warn('Failed to cache weather data:', cacheErr);
+      }
+
+      return result;
     } catch (error: any) {
       // Re-throw known error types for upstream handling
       if (error instanceof LocationNotFoundError) throw error;
