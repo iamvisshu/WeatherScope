@@ -8,6 +8,7 @@ import { UVIndexIndicator } from './uv-index-indicator';
 import { WindIndicator } from './wind-indicator';
 import { WeatherAnimations } from './weather-animations';
 import { HumidityIndicator } from './humidity-indicator';
+import { FeelsLike } from './feels-like';
 
 interface WeatherDisplayProps {
   weatherData: WeatherData;
@@ -81,9 +82,8 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
           </div>
           <div className="flex items-center gap-2">
             <CloudSun className={`w-4 h-4 ${isDaytime ? 'text-gray-500' : 'text-blue-300'}`} />
-            <span className={`text-sm ${isDaytime ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'}`}>
-              Feels like {apparentTemperature}°C
-            </span>
+            {/* Feels-like display with tooltip and accessibility */}
+            <FeelsLike value={apparentTemperature} unit="C" />
           </div>
         </div>
 
