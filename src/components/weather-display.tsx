@@ -3,6 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import type { WeatherData } from "@/lib/weather-data";
 import { WeatherIcon } from "./weather-icon";
 import { Droplets, Thermometer, Wind, Sun, Moon, CloudSun } from "lucide-react";
+import { TemperatureGauge } from './temperature-gauge';
+import { UVIndexIndicator } from './uv-index-indicator';
+import { WindIndicator } from './wind-indicator';
+import { WeatherAnimations } from './weather-animations';
+import { HumidityIndicator } from './humidity-indicator';
 
 interface WeatherDisplayProps {
   weatherData: WeatherData;
@@ -82,53 +87,22 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
           </div>
         </div>
 
-        {/* Weather Metrics Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Humidity */}
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime
-              ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm'
-              : 'bg-white/10 backdrop-blur-sm'
-            }`}>
-            <Droplets className={`w-8 h-8 mb-2 ${isDaytime ? 'text-blue-500' : 'text-blue-300'}`} />
-            <span className={`font-bold text-2xl ${isDaytime ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
-              {humidity}%
-            </span>
-            <span className={`text-xs mt-1 ${isDaytime ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'}`}>
-              Humidity
-            </span>
+        {/* Weather Visualizations */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
+            <TemperatureGauge value={temperature} />
           </div>
 
-          {/* Wind Speed */}
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime
-              ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm'
-              : 'bg-white/10 backdrop-blur-sm'
-            }`}>
-            <Wind className={`w-8 h-8 mb-2 ${isDaytime ? 'text-cyan-500' : 'text-cyan-300'}`} />
-            <span className={`font-bold text-2xl ${isDaytime ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
-              {windSpeed}
-            </span>
-            <span className={`text-xs mt-1 ${isDaytime ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'}`}>
-              km/h
-            </span>
+          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
+            <UVIndexIndicator uv={uvIndex} />
           </div>
 
-          {/* UV Index */}
-          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 col-span-2 md:col-span-2 ${isDaytime
-              ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm'
-              : 'bg-white/10 backdrop-blur-sm'
-            }`}>
-            <div className="flex items-center gap-2 mb-2">
-              <Sun className={`w-8 h-8 ${uvInfo.color}`} />
-              <Badge className={`${uvInfo.bgColor} ${uvInfo.color} border-0 font-semibold`}>
-                {uvInfo.label}
-              </Badge>
-            </div>
-            <span className={`font-bold text-2xl ${isDaytime ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
-              UV Index: {uvIndex}
-            </span>
-            <span className={`text-xs mt-1 text-center ${isDaytime ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'}`}>
-              {uvIndex > 7 ? "⚠️ Wear sunscreen!" : "Sun protection recommended"}
-            </span>
+          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
+            <WindIndicator speed={windSpeed} />
+          </div>
+
+          <div className={`flex flex-col items-center p-4 rounded-lg transition-all hover:scale-105 ${isDaytime ? 'bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm' : 'bg-white/10 backdrop-blur-sm'}`}>
+            <HumidityIndicator humidity={humidity} />
           </div>
         </div>
 

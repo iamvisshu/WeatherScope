@@ -91,4 +91,35 @@ body {
   .theme-transition, .theme-transition * {
     transition: background-color 300ms ease-in-out, color 300ms ease-in-out, border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
   }
+
+  /* Simple animations for weather visual effects */
+  @keyframes rainDrop {
+    0% { transform: translateY(-10%); opacity: 0.0 }
+    50% { opacity: 0.6 }
+    100% { transform: translateY(110%); opacity: 0 }
+  }
+
+  .animate-rain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4px 8px;
+    animation: rainDrop 2s linear infinite;
+  }
+
+  @keyframes snowFall {
+    0% { transform: translateY(-5%); opacity: 0 }
+    50% { opacity: 0.6 }
+    100% { transform: translateY(105%); opacity: 0 }
+  }
+
+  .animate-snow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 2px, transparent 2px);
+    background-size: 10px 20px;
+    animation: snowFall 6s linear infinite;
+  }
 }
