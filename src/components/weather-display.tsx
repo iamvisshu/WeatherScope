@@ -59,18 +59,25 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
           <div className="flex flex-col items-center lg:items-center justify-center space-y-6">
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <Badge variant="outline" className={isDaytime ? "border-yellow-600 text-yellow-700 dark:text-yellow-400 bg-yellow-50/50 dark:bg-yellow-900/20" : "border-indigo-300 text-indigo-700 dark:text-indigo-300 bg-indigo-50/50 dark:bg-indigo-900/30"}>
+                <Badge
+                  variant="outline"
+                  className={
+                    isDaytime
+                      ? "border-amber-500/50 text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-950/40 font-semibold"
+                      : "border-indigo-400/50 text-indigo-800 dark:text-indigo-300 bg-indigo-100/60 dark:bg-indigo-950/40 font-semibold"
+                  }
+                >
                   {isDaytime ? "DayTime" : "NightTime"}
                 </Badge>
               </div>
-              <WeatherIcon condition={condition} className="w-32 h-32 md:w-40 md:h-40 mx-auto text-primary drop-shadow-2xl" />
+              <WeatherIcon condition={condition} className="w-32 h-32 md:w-40 md:h-40 mx-auto text-amber-500 dark:text-amber-400 drop-shadow-2xl" />
               <CardTitle className="text-4xl md:text-5xl font-bold mt-6 text-slate-900 dark:text-white">
                 {city}
               </CardTitle>
-              <CardDescription className="text-xl md:text-2xl font-medium mt-2 text-slate-600 dark:text-slate-300">
+              <CardDescription className="text-xl md:text-2xl font-semibold mt-2 text-slate-700 dark:text-slate-200">
                 {condition}
               </CardDescription>
-              <p className="text-center italic text-base mt-2 text-slate-500 dark:text-slate-400">
+              <p className="text-center italic text-base mt-2 text-slate-600 dark:text-slate-300 font-medium">
                 "{description}"
               </p>
             </div>
@@ -81,9 +88,9 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
                 <span className="text-8xl md:text-9xl font-bold tracking-tighter text-slate-900 dark:text-white">
                   {temperature}
                 </span>
-                <span className="text-3xl mt-4 text-slate-600 dark:text-slate-400">°C</span>
+                <span className="text-3xl mt-4 text-slate-700 dark:text-slate-300 font-semibold">°C</span>
               </div>
-              <div className="flex items-center gap-2 rounded-full px-4 py-1 shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <div className="flex items-center gap-2 rounded-full px-4 py-1.5 shadow-sm bg-white/90 text-slate-800 dark:bg-slate-800/90 dark:text-slate-100 border border-slate-200 dark:border-slate-700">
                 <FeelsLike value={apparentTemperature} unit="C" />
               </div>
             </div>
@@ -97,19 +104,19 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col items-center justify-between p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+              <div className="flex flex-col items-center justify-between p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-200/80 dark:bg-slate-900/90 dark:text-slate-100 dark:border-slate-800">
                 <TemperatureGauge value={temperature} />
               </div>
 
-              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-200/80 dark:bg-slate-900/90 dark:text-slate-100 dark:border-slate-800">
                 <UVIndexIndicator uv={uvIndex} />
               </div>
 
-              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-200/80 dark:bg-slate-900/90 dark:text-slate-100 dark:border-slate-800">
                 <WindIndicator speed={windSpeed} />
               </div>
 
-              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800">
+              <div className="flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-[1.02] aspect-square shadow-sm bg-white text-slate-900 border border-slate-200/80 dark:bg-slate-900/90 dark:text-slate-100 dark:border-slate-800">
                 <HumidityIndicator humidity={humidity} />
               </div>
             </div>
@@ -118,11 +125,11 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
 
         {/* Bottom Section: 7-Day Forecast */}
         {forecast && forecast.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/50">
+          <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700/60">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                <CalendarDays className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                   7-Day Forecast
                 </h3>
               </div>
@@ -140,7 +147,7 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
         )}
 
         {/* Footer Info */}
-        <div className="text-center text-xs mt-8 text-slate-500 dark:text-slate-400">
+        <div className="text-center text-xs mt-8 text-slate-600 dark:text-slate-400 font-medium">
           Real-time weather data • Updated now
         </div>
       </CardContent>

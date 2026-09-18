@@ -13,23 +13,20 @@ export function ForecastCard({ day, isDaytime = true }: ForecastCardProps) {
     const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
 
     return (
-        <Card className={`min-w-[120px] shadow-sm shrink-0 transition-colors ${isDaytime
-            ? 'bg-white border text-slate-900 border-slate-100 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100'
-            : 'bg-white/10 text-white border border-white/20 dark:bg-black/60 dark:border-white/10'
-            }`}>
+        <Card className="min-w-[120px] shadow-sm shrink-0 transition-all bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700">
             <CardContent className="p-4 flex flex-col items-center gap-2">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                     {dayName}
                 </span>
                 <WeatherIcon condition={day.condition} className="w-8 h-8 my-1" />
 
-                <div className="flex gap-2 text-sm font-bold">
-                    <span className="text-gray-900 dark:text-white">{day.tempMax}°</span>
-                    <span className="text-gray-500 dark:text-gray-400">{day.tempMin}°</span>
+                <div className="flex gap-2 text-sm items-baseline">
+                    <span className="text-slate-900 dark:text-white font-bold">{day.tempMax}°</span>
+                    <span className="text-slate-500 dark:text-slate-400 font-semibold">{day.tempMin}°</span>
                 </div>
 
                 {day.precipitation > 0 && (
-                    <div className="flex items-center gap-1 text-xs font-medium text-blue-500">
+                    <div className="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
                         <Droplets className="w-3 h-3" />
                         <span>{day.precipitation}mm</span>
                     </div>

@@ -20,17 +20,25 @@ export function UVIndexIndicator({ uv }: UVIndexProps) {
     return 'Extreme';
   };
 
+  const getLabelColor = (uv: number) => {
+    if (uv <= 2) return 'text-emerald-700 dark:text-emerald-400';
+    if (uv <= 5) return 'text-amber-700 dark:text-amber-400';
+    if (uv <= 7) return 'text-orange-700 dark:text-orange-400';
+    if (uv <= 10) return 'text-red-700 dark:text-red-400';
+    return 'text-purple-700 dark:text-purple-400';
+  };
+
   const ariaLabel = `UV Index: ${uv}, ${getLabel(uv)}.`;
 
   return (
     <div className="w-full max-w-xs" aria-label={ariaLabel}>
       <div className="flex items-center justify-between mb-2">
-        <div className="font-semibold">UV Index</div>
-        <div className="text-sm text-muted-foreground">{uv}</div>
+        <div className="font-semibold text-sm text-slate-700 dark:text-slate-300">UV Index</div>
+        <div className="text-base font-bold text-slate-900 dark:text-white">{uv}</div>
       </div>
 
       <div
-        className="w-full h-3 bg-muted rounded-full overflow-hidden"
+        className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={11}
@@ -38,7 +46,7 @@ export function UVIndexIndicator({ uv }: UVIndexProps) {
         aria-label={ariaLabel}
       >
         <motion.div
-          className={`h-3 rounded-full`} 
+          className="h-3 rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={reduceMotion ? { duration: 0 } : { duration: 0.6, ease: 'easeOut' }}
@@ -47,15 +55,15 @@ export function UVIndexIndicator({ uv }: UVIndexProps) {
         />
       </div>
 
-      <div className="text-xs mt-1 text-muted-foreground">{getLabel(uv)}</div>
+      <div className={`text-xs mt-1.5 font-semibold ${getLabelColor(uv)}`}>{getLabel(uv)}</div>
     </div>
   );
 }
 
 function getUVGradient(uv: number) {
-  if (uv <= 2) return 'linear-gradient(90deg,#d1fae5,#bbf7d0)';
-  if (uv <= 5) return 'linear-gradient(90deg,#fef3c7,#fde68a)';
-  if (uv <= 7) return 'linear-gradient(90deg,#ffedd5,#fb923c)';
-  if (uv <= 10) return 'linear-gradient(90deg,#fecaca,#ef4444)';
-  return 'linear-gradient(90deg,#f5d0fe,#7c3aed)';
+  if (uv <= 2) return 'linear-gradient(90deg, #34d399, #10b981)';
+  if (uv <= 5) return 'linear-gradient(90deg, #fbbf24, #f59e0b)';
+  if (uv <= 7) return 'linear-gradient(90deg, #fb923c, #ea580c)';
+  if (uv <= 10) return 'linear-gradient(90deg, #f87171, #dc2626)';
+  return 'linear-gradient(90deg, #c084fc, #9333ea)';
 }

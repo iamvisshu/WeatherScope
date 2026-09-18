@@ -28,11 +28,17 @@ export function ThemeToggle() {
   };
 
   return (
-    <Button variant="outline" size="icon" onClick={toggleTheme} className="rounded-full bg-white/20 backdrop-blur-sm border-2 border-gray-300 dark:border-gray-500 hover:bg-white/40 dark:bg-black/20 dark:hover:bg-black/40 transition-all shadow-sm">
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={toggleTheme}
+      className="rounded-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-sm"
+      aria-label="Toggle theme"
+    >
       {isDark ? (
-        <Moon className="h-[1.2rem] w-[1.2rem] text-blue-200" />
+        <Moon className="h-[1.2rem] w-[1.2rem] text-blue-400" />
       ) : (
-        <Sun className="h-[1.2rem] w-[1.2rem] text-yellow-500" />
+        <Sun className="h-[1.2rem] w-[1.2rem] text-amber-500" />
       )}
       <span className="sr-only">Toggle theme</span>
     </Button>
