@@ -20,7 +20,7 @@ export const countries: Country[] = [
   { name: 'Germany', cities: ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Leipzig', 'Dortmund'] },
   { name: 'Greece', cities: ['Athens', 'Thessaloniki', 'Patras', 'Heraklion', 'Larissa'] },
   { name: 'India', cities: [
-    'Agartala', 'Agra', 'Ahmedabad', 'Aizawl', 'Ajmer', 'Akbarpur', 'Aligarh', 'Ambala', 'Amritsar', 'Anantnag', 'Asansol', 'Aurangabad', 'Ayodhya',
+    'Agartala', 'Agra', 'Ahmedabad', 'Aizawl', 'Ajmer', 'Akbarpur Ambedkarnagar', 'Aligarh', 'Ambala', 'Amritsar', 'Anantnag', 'Asansol', 'Aurangabad', 'Ayodhya',
     'Bangalore', 'Belgaum', 'Bhilai', 'Bhopal', 'Bhubaneswar', 'Bikaner', 'Bilaspur', 'Bokaro', 'Chandigarh', 'Chennai', 'Coimbatore',
     'Cuttack', 'Dehradun', 'Delhi', 'Dhanbad', 'Dharamshala', 'Dibrugarh', 'Dimapur', 'Durgapur', 'Faizabad', 'Faridabad', 'Gandhinagar', 'Gangtok',
     'Gaya', 'Ghaziabad', 'Gurugram', 'Guwahati', 'Gwalior', 'Haridwar', 'Howrah', 'Hubli', 'Hyderabad', 'Imphal', 'Indore', 'Itanagar',

@@ -135,9 +135,14 @@ export const getCurrentWeather = ai.defineTool(
       const normalizedCity = input.city.trim().toLowerCase();
       const geoCacheKey = `geocode:${normalizedCity}`;
 
+      let queryCity = input.city;
+      if (normalizedCity === 'akbarpur ambedkarnagar') {
+        queryCity = 'Akbarpur';
+      }
+
       let geoData: any = cache.get<any>(geoCacheKey);
       if (!geoData) {
-        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input.city)}&count=1&language=en&format=json`;
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(queryCity)}&count=10&language=en&format=json`;
         const geoResponse = await fetchWithRetry(geoUrl, {}, 2);
         geoData = await geoResponse.json();
 
@@ -149,7 +154,19 @@ export const getCurrentWeather = ai.defineTool(
         cache.set(geoCacheKey, geoData, DEFAULT_WEATHER_TTL_MS);
       }
 
-      const { latitude, longitude, name, country } = geoData.results[0];
+      let selectedResult = geoData.results[0];
+
+      // Guarantee we pick the correct Akbarpur by checking the district
+      if (normalizedCity === 'akbarpur ambedkarnagar' && geoData.results.length > 0) {
+        const ambedkarNagarResult = geoData.results.find((r: any) => 
+          r.admin2 && r.admin2.toLowerCase().includes('ambedkar nagar')
+        );
+        if (ambedkarNagarResult) {
+          selectedResult = ambedkarNagarResult;
+        }
+      }
+
+      const { latitude, longitude, name, country } = selectedResult;
 
       // 2. Fetch weather data using coordinates (cached)
       const weatherCacheKey = `weather:${latitude}:${longitude}`;
